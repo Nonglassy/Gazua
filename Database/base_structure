@@ -1,0 +1,50 @@
+#PostgreSQL의 TimescalseDB를 이용하여 전처리한 금융데이터를 토대로 기본 구조생성.
+#TimescaleDB를 이용하여 시계열 데이터를 더 잘 다룰 수 있음
+
+-- Table: Project.Finance
+
+-- DROP TABLE IF EXISTS "Project"."Finance";
+
+CREATE TABLE IF NOT EXISTS "Project"."Finance"
+(
+    "time" timestamp without time zone NOT NULL,
+    open numeric,
+    high numeric,
+    low numeric,
+    close numeric,
+    volume numeric,
+    CONSTRAINT "Finance_pkey" PRIMARY KEY ("time")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS "Project"."Finance"
+    OWNER to postgres;
+
+SELECT create_hypertable('"Project"."Finance"','time')
+
+COPY "Project"."Finance" FROM 'C:\Program Files\PostgreSQL\14\bin\financial.csv' DELIMITER ',' CSV HEADER;
+
+#위와 같이 PostgreSQL의 TimescalseDB를 이용하여 전처리한 News 데이터를 토대로 기본 구조생성
+#추후에 추가될 자료는 관계형 데이터베이스의 장점을 살려서 연결시켜 잘 관리할 것이다. 아직은 nlp와 금융데이터에 대해서 기본적인 구조만 구성하였다.
+
+-- Table: Project.News
+
+-- DROP TABLE IF EXISTS "Project"."News";
+
+CREATE TABLE IF NOT EXISTS "Project"."News"
+(
+    date date,
+    "News title" text COLLATE pg_catalog."default",
+    "Bitcoin price" numeric,
+    "Sentiment" integer
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS "Project"."News"
+    OWNER to postgres;
+    
+SELECT create_hypertable('"Project"."News"','date')
+
+COPY "Project"."News" FROM 'C:\Program Files\PostgreSQL\14\bin\news.csv' DELIMITER ',' CSV HEADER;
